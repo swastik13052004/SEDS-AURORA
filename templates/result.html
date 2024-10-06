@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seismic Signals Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            background-color: black; /* Black space background */
+            color: #ddd; /* Light text color */
+            text-align: center;
+        }
+        header {
+            background-color: #34495e;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        header button {
+            margin: 0 10px;
+            padding: 10px 15px;
+            color: white;
+            background-color: #555;
+            border: none;
+            cursor: pointer;
+            border-radius: 15px; /* Curved edges for buttons */
+        }
+        header button:hover {
+            background-color: #777;
+        }
+        .container {
+            position: relative;
+            z-index: 10;
+            margin-top: 100px; /* Space from top for intro */
+        }
+        .intro {
+            font-size: 36px; /* Large font size for intro */
+            margin-bottom: 20px;
+        }
+        .download-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .download-button:hover {
+            background-color: #777;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<header>
+    <button onclick="window.location.href='predictions.html'">Predictions</button>
+    <button onclick="window.location.href='about_us.html'">About Us</button>
+    <button onclick="window.location.href='contact_us.html'">Contact Us</button>
+</header>
+
+<div class="container">
+    <div class="intro">Welcome to Our Seismic Signals Report</div>
+    <button class="download-button" onclick="downloadReport()">Download Seismic Signals Report</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Resize canvas to fill window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Generate stars
+    const stars = Array.from({ length: 150 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2,
+        opacity: Math.random() * 0.5 + 0.5,
+        twinkleSpeed: Math.random() * 0.02 + 0.01
+    }));
+
+    function drawStar(star) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+    }
+
+    function updateStars() {
+        stars.forEach(star => {
+            star.opacity += star.twinkleSpeed;
+            if (star.opacity > 1 || star.opacity < 0) {
+                star.twinkleSpeed *= -1; // Reverse direction
+            }
+        });
+    }
+
+    function drawPlanet(planet) {
+        const auraRadius = planet.radius + 20;
+        const gradient = ctx.createRadialGradient(planet.x, planet.y, planet.radius, planet.x, planet.y, auraRadius);
+        gradient.addColorStop(0, planet.auraColor);
+        gradient.addColorStop(1, 'transparent');
+
+        ctx.beginPath();
+        ctx.fillStyle = gradient;
+        ctx.arc(planet.x, planet.y, auraRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = planet.color;
+        ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Mars (left side) - slower speed
+    const mars = { x: 0, y: canvas.height / 2, radius: 30, color: 'red', auraColor: 'rgba(255, 0, 0, 0.5)', orbitRadius: 100, angle: 0, orbitSpeed: 0.01 };
+    
+    // Moon (right side) - slower speed
+    const moon = { x: canvas.width, y: canvas.height / 2, radius: 20, color: 'gray', auraColor: 'rgba(128, 128, 128, 0.5)', orbitRadius: 50, angle: Math.PI, orbitSpeed: 0.015 };
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Update and draw stars
+        updateStars();
+        stars.forEach(drawStar);
+
+        // Update Mars position (moving left to right)
+        mars.x = (canvas.width / 4) + mars.orbitRadius * Math.cos(mars.angle);
+        mars.y = (canvas.height / 2) + mars.orbitRadius * Math.sin(mars.angle);
+        mars.angle += mars.orbitSpeed;
+
+        // Update Moon position (moving right to left)
+        moon.x = (canvas.width * 3) / 4 + moon.orbitRadius * Math.cos(moon.angle);
+        moon.y = (canvas.height / 2) + moon.orbitRadius * Math.sin(moon.angle);
+        moon.angle += moon.orbitSpeed;
+
+        // Draw Mars and Moon
+        drawPlanet(mars);
+        drawPlanet(moon);
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    function downloadReport() {
+        const link = document.createElement('a');
+        link.href = 'path/to/seismic_report.pdf'; // Update with the actual file path
+        link.download = 'Seismic_Signals_Report.pdf';
+        link.click();
+    }
+</script>
+
+</body>
+</html>

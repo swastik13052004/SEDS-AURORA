@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seismic Signals Prediction System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            color: white;
+            background: black;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(44, 62, 80, 0.9);
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #34495e;
+        }
+        .section {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 1; /* Ensures text is above the canvas */
+        }
+        .hero h1 {
+            font-size: 3em;
+            margin: 0;
+        }
+        .hero p {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Canvas is behind the text */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="solarCanvas"></canvas>
+
+    <div class="navbar">
+        <a href="./prediction.html">Prediction</a>
+        <a href="./contact.html">Contact Us</a>
+        <a href="./about_us.html">About Us</a>
+    </div>
+
+    <div id="home" class="section hero">
+        <h1>Imbibe the predictions of Seismic signals</h1>
+        <p>And Get through the research journey.</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('solarCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Star properties
+        const stars = [];
+        for (let i = 0; i < 150; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 1, // Random star size
+            });
+        }
+
+        // Mars properties
+        const mars = {
+            x: canvas.width / 4,
+            y: canvas.height / 2,
+            radius: 40,
+            color: '#d14d3b',
+            auraColor: 'rgba(209, 77, 59, 0.5)',
+            angle: 0,
+            orbitRadius: 200,
+            orbitSpeed: 0.005 // Slower speed
+        };
+
+        // Moon properties
+        const moon = {
+            x: (canvas.width * 3) / 4,
+            y: canvas.height / 2,
+            radius: 20,
+            color: '#b0b0b0',
+            auraColor: 'rgba(176, 176, 176, 0.5)',
+            angle: 0,
+            orbitRadius: 100,
+            orbitSpeed: 0.007 // Slower speed
+        };
+
+        function drawStar(star) {
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`; // Vibrant stars
+            ctx.fill();
+        }
+
+        function drawPlanet(planet) {
+            // Draw aura
+            const auraRadius = planet.radius + 20;
+            const gradient = ctx.createRadialGradient(planet.x, planet.y, planet.radius, planet.x, planet.y, auraRadius);
+            gradient.addColorStop(0, planet.auraColor);
+            gradient.addColorStop(1, 'transparent');
+
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(planet.x, planet.y, auraRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw planet
+            ctx.beginPath();
+            ctx.fillStyle = planet.color;
+            ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw stars in the background
+            stars.forEach(drawStar);
+
+            // Update Mars position
+            mars.x = canvas.width / 4 + mars.orbitRadius * Math.cos(mars.angle);
+            mars.y = canvas.height / 2 + mars.orbitRadius * Math.sin(mars.angle);
+            mars.angle += mars.orbitSpeed;
+
+            // Update Moon position
+            moon.x = (canvas.width * 3) / 4 + moon.orbitRadius * Math.cos(moon.angle);
+            moon.y = canvas.height / 2 + moon.orbitRadius * Math.sin(moon.angle);
+            moon.angle += moon.orbitSpeed;
+
+            // Draw Mars and Moon
+            drawPlanet(mars);
+            drawPlanet(moon);
+
+            requestAnimationFrame(animate);
+        }
+
+        // Start animation
+        animate();
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
++

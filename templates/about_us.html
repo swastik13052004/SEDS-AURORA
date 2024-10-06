@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+            background-color: black; /* Black space background */
+        }
+        header {
+            background-color: #34495e;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        header button {
+            margin: 0 10px;
+            padding: 10px 15px;
+            color: white;
+            background-color: #555;
+            border: none;
+            cursor: pointer;
+            border-radius: 15px; /* Curved edges for buttons */
+        }
+        header button:hover {
+            background-color: #777;
+        }
+        .container {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            z-index: 10;
+        }
+        .pictures {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .picture {
+            width: 150px;
+            height: 150px;
+            background-color: #ddd;
+            margin: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            color: #777;
+            border-radius: 75px; /* Circular icons */
+            overflow: hidden;
+            position: relative;
+        }
+        .picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the area without distortion */
+            border-radius: 75px; /* Ensure image is also circular */
+        }
+        .about {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<header>
+    <button onclick="window.location.href='predictions.html'">Predictions</button>
+    <button onclick="window.location.href='about_us.html'">About Us</button>
+    <button onclick="window.location.href='contact_us.html'">Contact Us</button>
+</header>
+
+<div class="container">
+    <h1>About Us</h1>
+    <p class="about">We are a dedicated team committed to delivering quality services and fostering innovation. Our passion drives us to excel in everything we do.</p>
+    
+    <div class="pictures">
+        <div class="picture">
+            <img src="path/to/image1.jpg" alt="Team Member 1">
+        </div>
+        <div class="picture">
+            <img src="path/to/image2.jpg" alt="Team Member 2">
+        </div>
+        <div class="picture">
+            <img src="path/to/image3.jpg" alt="Team Member 3">
+        </div>
+        <div class="picture">
+            <img src="path/to/image4.jpg" alt="Team Member 4">
+        </div>
+        <div class="picture">
+            <img src="path/to/image5.jpg" alt="Team Member 5">
+        </div>
+        <div class="picture">
+            <img src="path/to/image6.jpg" alt="Team Member 6">
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Resize canvas to fill window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Generate stars
+    const stars = Array.from({ length: 100 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2,
+        opacity: Math.random() * 0.5 + 0.5,
+        twinkleSpeed: Math.random() * 0.02 + 0.01
+    }));
+
+    function drawStar(star) {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+    }
+
+    function updateStars() {
+        stars.forEach(star => {
+            star.opacity += star.twinkleSpeed;
+            if (star.opacity > 1 || star.opacity < 0) {
+                star.twinkleSpeed *= -1; // Reverse direction
+            }
+        });
+    }
+
+    function drawPlanet(planet) {
+        const auraRadius = planet.radius + 20;
+        const gradient = ctx.createRadialGradient(planet.x, planet.y, planet.radius, planet.x, planet.y, auraRadius);
+        gradient.addColorStop(0, planet.auraColor);
+        gradient.addColorStop(1, 'transparent');
+
+        ctx.beginPath();
+        ctx.fillStyle = gradient;
+        ctx.arc(planet.x, planet.y, auraRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = planet.color;
+        ctx.arc(planet.x, planet.y, planet.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Mars (left side)
+    const mars = { x: 0, y: canvas.height / 2, radius: 30, color: 'red', auraColor: 'rgba(255, 0, 0, 0.5)', orbitRadius: 100, angle: 0, orbitSpeed: 0.02 };
+    
+    // Moon (right side)
+    const moon = { x: canvas.width, y: canvas.height / 2, radius: 20, color: 'gray', auraColor: 'rgba(128, 128, 128, 0.5)', orbitRadius: 50, angle: Math.PI, orbitSpeed: 0.03 };
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Update and draw stars
+        updateStars();
+        stars.forEach(drawStar);
+
+        // Update Mars position (moving left to right)
+        mars.x = (canvas.width / 4) + mars.orbitRadius * Math.cos(mars.angle);
+        mars.y = (canvas.height / 2) + mars.orbitRadius * Math.sin(mars.angle);
+        mars.angle += mars.orbitSpeed;
+
+        // Update Moon position (moving right to left)
+        moon.x = (canvas.width * 3) / 4 + moon.orbitRadius * Math.cos(moon.angle);
+        moon.y = (canvas.height / 2) + moon.orbitRadius * Math.sin(moon.angle);
+        moon.angle += moon.orbitSpeed;
+
+        // Draw Mars and Moon
+        drawPlanet(mars);
+        drawPlanet(moon);
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+</script>
+
+</body>
+</html>
